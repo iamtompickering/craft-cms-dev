@@ -1,0 +1,88 @@
+# Vite
+
+dist
+
+# Sass
+
+*.sassc
+.sass-cache/*
+.sass-cache
+*.css.map
+
+# Javascript
+
+*.js.map
+
+# OS Files
+
+.DS_Store
+*.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Craft CMS
+
+cpresources
+vendor
+.env
+*.log
+storage/*
+!storage/rebrand
+license.key
+license.key.*
+
+# Node / npm
+
+node_modules
+
+# Backups
+
+backups
+
+# Caching
+
+web/cache
+public/cache
+public_html/cache
+httpdocs/cache
+cache/*
+
+# Asset Source Folders
+
+web/assets
+public/assets
+public_html/assets
+httpdocs/assets
+
+# Transform Folders
+
+web/transforms
+public/transforms
+public_html/transforms
+httpdocs/transforms
+
+# Log files
+
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

@@ -1,0 +1,36 @@
+{% extends '_layouts/base' %}
+
+{% set vars = {
+	class: {
+		siteMargin: {
+			x: 'px-10',
+			r: 'pr-10',
+			l: 'pl-10'
+		},
+		gutter: {
+			x: 'px-10',
+			y: 'py-10',
+			t: 'pt-10',
+			r: 'pr-10',
+			b: 'pb-10',
+			l: 'pl-10'
+		},
+		gap: {
+			x: 'gap-x-10',
+			y: 'gap-y-10'
+		}
+	}
+} %}
+
+{% block body %}
+
+	{# Global Site Header #}
+    {% include '_components/global/header' %}
+
+	{% block site %}
+	{% endblock %}
+
+	{# Global Site Footer #}
+    {% include '_components/global/footer' %}
+
+{% endblock %}
