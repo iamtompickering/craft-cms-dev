@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { HDRCubeTextureLoader } from 'three/addons/loaders/HDRCubeTextureLoader.js';
 import { PMREMGenerator } from 'three';
 
 const threeModule = () => {
+
     let windowWidth = window.innerWidth;
     let windowHeight = window.innerHeight;
     let pixelRatio = window.devicePixelRatio;
@@ -15,33 +17,28 @@ const threeModule = () => {
         alpha: true
     });
 
-    let pointLight, ambientLight;
-
-    const settings = {
-        metalness: 1.0,
-        roughness: 0.015,
-        ambientIntensity: 0.3,
-        aoMapIntensity: 1.0,
-        envMapIntensity: 2.5,
-        displacementScale: 2.436143,
-        normalScale: 1.0,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.0
-    };
+    const controls = new OrbitControls(camera, renderer.domElement);
 
     const pmremGenerator = new PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
 
     const envScene = new THREE.Scene();
 
+    // Ground
+
     const groundGeometry = new THREE.PlaneGeometry(1000, 1000);
     const groundMaterial = new THREE.MeshStandardMaterial({
         color: 0x65e2ca,
     });
+
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -400;
+
     envScene.add(ground);
+
+    // Boxes
 
     const boxes = [
         { color: 0x65e2ca, position: [100, 50, 100], size: 100 },
@@ -57,6 +54,8 @@ const threeModule = () => {
         box.position.set(...position);
         envScene.add(box);
     });
+
+    // Lights
 
     const envLights = [
         { type: 'AmbientLight', color: 0xffffff, intensity: 1.2 },
@@ -79,34 +78,27 @@ const threeModule = () => {
     pmremGenerator.dispose();
 
     const lights = [
-        { type: 'AmbientLight', color: 0xffffff, intensity: settings.ambientIntensity, assignTo: 'ambientLight' },
-        { type: 'PointLight', color: 0x65e2ca, intensity: 4.0, distance: 0, decay: 2, position: [0, 100, 250], assignTo: 'pointLight' },
         { type: 'PointLight', color: 0xff86db, intensity: 5.0, distance: 0, decay: 2, parent: 'camera' },
         { type: 'PointLight', color: 0x7388fe, intensity: 4.0, distance: 0, decay: 2, position: [-100, -100, 100] },
         { type: 'DirectionalLight', color: 0xffffff, intensity: 2.0, position: [200, 200, 200] }
     ];
 
-    lights.forEach(({ type, color, intensity, distance, decay, position, parent, assignTo }) => {
+    lights.forEach(({ type, color, intensity, distance, decay, position, parent }) => {
+
         let light;
-        if (type === 'AmbientLight') {
-            light = new THREE.AmbientLight(color, intensity);
-        } else if (type === 'PointLight') {
+
+        if (type === 'PointLight') {
+
             light = new THREE.PointLight(color, intensity, distance, decay);
             if (position) {
                 light.position.set(...position);
             }
+
         } else if (type === 'DirectionalLight') {
+
             light = new THREE.DirectionalLight(color, intensity);
             if (position) {
                 light.position.set(...position);
-            }
-        }
-
-        if (assignTo) {
-            if (assignTo === 'ambientLight') {
-                ambientLight = light;
-            } else if (assignTo === 'pointLight') {
-                pointLight = light;
             }
         }
 
@@ -114,37 +106,44 @@ const threeModule = () => {
         target.add(light);
     });
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-
-    const material = new THREE.MeshPhysicalMaterial({
-        color: 0xffffff,
-        roughness: settings.roughness,
-        metalness: settings.metalness,
-        envMap: envMap,
-        envMapIntensity: settings.envMapIntensity,
-        clearcoat: settings.clearcoat,
-        clearcoatRoughness: settings.clearcoatRoughness,
-        transmission: 0.1,
-        thickness: 1,
-        side: THREE.DoubleSide
-    });
+    // Load the geometry
 
     const loader = new GLTFLoader();
     let model = null;
 
     loader.load('/dist/tss.gltf', (gltf) => {
         gltf.scene.traverse((child) => {
+
             if (child.isMesh) {
-                child.material = material;
+
+                child.material = new THREE.MeshPhysicalMaterial({
+                    color: 0xffffff,
+                    roughness: 0.015,
+                    metalness: 1.0,
+                    envMap: envMap,
+                    envMapIntensity: 2.5,
+                    clearcoat: 1.0,
+                    clearcoatRoughness: 0.0,
+                    transmission: 0.1,
+                    thickness: 1,
+                    side: THREE.DoubleSide
+                });
+
             }
+
         });
 
         model = gltf.scene;
         scene.add(model);
+
     });
+
+    // Camera
 
     camera.position.set(0, 10, 80);
     camera.lookAt(0, 0, -5);
+
+    // Renderer
 
     renderer.setClearColor('#000000');
     renderer.setPixelRatio(pixelRatio);
