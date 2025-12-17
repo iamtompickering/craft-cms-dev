@@ -1,11 +1,23 @@
 @import "tailwindcss";
 
+@import "./base.pcss";
+
 @source '../../templates/**/*.twig';
 @source '../../templates/**/*.html';
 @source '../../templates/**/*.css';
 
+@source inline('grid');
+@source inline('grid-cols-{1..12}');
+@source inline('col-span-{1..12}');
+@source inline('gap-{0..12}');
+@source inline('sticky');
+@source inline('top-{0..12}');
+@source inline('underline');
+@source inline('flex');
+@source inline('flex-col');
+
 @theme {
-  
+
   --breakpoint-*: initial;
   --breakpoint-xs: 375px;
   --breakpoint-sm: 640px;
@@ -41,10 +53,8 @@
   --text-8xl: 6rem;
   --text-9xl: 8rem;
 
-  --font-sans-primary:
-    ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-serif-primary:
-    ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-sans-primary: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-serif-primary: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
 
 }
