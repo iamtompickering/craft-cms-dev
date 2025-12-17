@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PMREMGenerator } from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 
 const threeModule = () => {
 
@@ -19,8 +21,6 @@ const threeModule = () => {
         metalness: 1.0,
     };
 
-    const MODEL_ROTATION_SPEED = { y: 0.002 };
-
     // Helper functions
     const getWindowDimensions = () => ({
         width: window.innerWidth,
@@ -29,7 +29,7 @@ const threeModule = () => {
     });
 
     const createLight = (config, targetScene) => {
-        const { type, color, intensity, distance = 0, decay = 2, position } = config;
+        const { type, color, intensity, distance = 0, decay = 1, position } = config;
         let light;
 
         switch (type) {
@@ -51,7 +51,7 @@ const threeModule = () => {
     };
 
     const setupRenderer = (renderer, width, height, pixelRatio) => {
-        renderer.setClearColor('#000000');
+        renderer.setClearColor('#111111');
         renderer.setPixelRatio(pixelRatio);
         renderer.setSize(width, height);
         renderer.shadowMap.enabled = true;
@@ -69,8 +69,12 @@ const threeModule = () => {
     let { width: windowWidth, height: windowHeight, pixelRatio } = getWindowDimensions();
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(10, windowWidth / windowHeight, 1, 2000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const camera = new THREE.PerspectiveCamera(8, windowWidth / windowHeight, 1, 2000);
+    const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+    });
 
     const pmremGenerator = new PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
@@ -88,7 +92,7 @@ const threeModule = () => {
     envScene.add(ground);
 
     // Boxes
-    const boxes = [
+    const boxesConfig = [
         { color: colours.green, position: [100, 20, 100], size: 50 },
         { color: colours.blue, position: [-50, 50, -100], size: 20 },
         { color: colours.pink, position: [-50, 50, -50], size: 20 },
@@ -96,13 +100,16 @@ const threeModule = () => {
         { color: colours.pink, position: [0, 0, 200], size: 50 }
     ];
 
-    boxes.forEach(({ color, position, size }) => {
+    const boxes = [];
+    boxesConfig.forEach(({ color, position, size }) => {
         const box = new THREE.Mesh(
             new THREE.BoxGeometry(size, size, size),
             new THREE.MeshStandardMaterial({ color })
         );
         box.position.set(...position);
+        box.userData.originalPosition = [...position];
         envScene.add(box);
+        boxes.push(box);
     });
 
     // Environment lights
@@ -148,12 +155,18 @@ const threeModule = () => {
     setupRenderer(renderer, windowWidth, windowHeight, pixelRatio);
     document.querySelector('.js-three-wrapper').appendChild(renderer.domElement);
 
+    // Setup post-processing
+    const composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+
     // Resize handler
     window.addEventListener('resize', () => {
         ({ width: windowWidth, height: windowHeight } = getWindowDimensions());
         renderer.setSize(windowWidth, windowHeight);
         camera.aspect = windowWidth / windowHeight;
         camera.updateProjectionMatrix();
+        composer.setSize(windowWidth, windowHeight);
     });
 
     let keyframe = 0;
@@ -161,18 +174,13 @@ const threeModule = () => {
     // Render loop
     const render = () => {
         requestAnimationFrame(render);
-        keyframe += 0.001;
         if (model) {
-            model.rotation.y += MODEL_ROTATION_SPEED.y;
-            model.rotation.z += Math.cos(model.rotation.y) * 0.001;
-            model.rotation.x += Math.sin(model.rotation.y) * 0.001;
+            model.rotation.y += 0.004;
+            model.rotation.z += Math.cos(model.rotation.y) * 0.002;
+            model.rotation.x += Math.sin(model.rotation.y) * 0.002;
         }
 
-        boxes.forEach((box) => {
-            // console.log(box);
-        });
-
-        renderer.render(scene, camera);
+        composer.render();
     };
 
     render();
