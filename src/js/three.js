@@ -1,49 +1,99 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { HDRCubeTextureLoader } from 'three/addons/loaders/HDRCubeTextureLoader.js';
 import { PMREMGenerator } from 'three';
 
 const threeModule = () => {
 
-    let windowWidth = window.innerWidth;
-    let windowHeight = window.innerHeight;
-    let pixelRatio = window.devicePixelRatio;
+    const colours = {
+        green: 0x65e2ca,
+        blue: 0x7c8fff,
+        yellow: 0xe4f59f,
+        pink: 0xfe85db,
+        white: 0xffffff,
+    };
 
-    let scene = new THREE.Scene();
-    let camera = new THREE.PerspectiveCamera(10, windowWidth / windowHeight, 1, 2000);
-    let renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        alpha: true
+    // Constants
+    const MODEL_MATERIAL_CONFIG = {
+        color: colours.white,
+        roughness: 0.0,
+        metalness: 1.0,
+    };
+
+    const MODEL_ROTATION_SPEED = { y: 0.002 };
+
+    // Helper functions
+    const getWindowDimensions = () => ({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        pixelRatio: window.devicePixelRatio
     });
 
-    const controls = new OrbitControls(camera, renderer.domElement);
+    const createLight = (config, targetScene) => {
+        const { type, color, intensity, distance = 0, decay = 2, position } = config;
+        let light;
+
+        switch (type) {
+            case 'AmbientLight':
+                light = new THREE.AmbientLight(color, intensity);
+                break;
+            case 'PointLight':
+                light = new THREE.PointLight(color, intensity, distance, decay);
+                if (position) light.position.set(...position);
+                break;
+            case 'DirectionalLight':
+                light = new THREE.DirectionalLight(color, intensity);
+                if (position) light.position.set(...position);
+                break;
+        }
+
+        if (light) targetScene.add(light);
+        return light;
+    };
+
+    const setupRenderer = (renderer, width, height, pixelRatio) => {
+        renderer.setClearColor('#000000');
+        renderer.setPixelRatio(pixelRatio);
+        renderer.setSize(width, height);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.gammaInput = true;
+        renderer.gammaOutput = true;
+    };
+
+    const setupCamera = (camera, position, lookAt) => {
+        camera.position.set(...position);
+        camera.lookAt(...lookAt);
+    };
+
+    // Initialize
+    let { width: windowWidth, height: windowHeight, pixelRatio } = getWindowDimensions();
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(10, windowWidth / windowHeight, 1, 2000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 
     const pmremGenerator = new PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
 
+    // Environment scene
     const envScene = new THREE.Scene();
 
     // Ground
-
-    const groundGeometry = new THREE.PlaneGeometry(1000, 1000);
-    const groundMaterial = new THREE.MeshStandardMaterial({
-        color: 0x65e2ca,
-    });
-
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-
+    const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(1000, 1000),
+        new THREE.MeshStandardMaterial({ color: colours.blue })
+    );
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -400;
-
     envScene.add(ground);
 
     // Boxes
-
     const boxes = [
-        { color: 0x65e2ca, position: [100, 50, 100], size: 100 },
-        { color: 0x7388fe, position: [-100, 50, -100], size: 100 },
-        { color: 0x65e2ca, position: [-100, 50, 100], size: 100 }
+        { color: colours.green, position: [100, 20, 100], size: 50 },
+        { color: colours.blue, position: [-50, 50, -100], size: 20 },
+        { color: colours.pink, position: [-50, 50, -50], size: 20 },
+        { color: colours.green, position: [0, -50, -100], size: 50 },
+        { color: colours.pink, position: [0, 0, 200], size: 50 }
     ];
 
     boxes.forEach(({ color, position, size }) => {
@@ -55,124 +105,72 @@ const threeModule = () => {
         envScene.add(box);
     });
 
-    // Lights
-
+    // Environment lights
     const envLights = [
-        { type: 'AmbientLight', color: 0xffffff, intensity: 1.2 },
+        { type: 'AmbientLight', color: 0xffffff, intensity: 2.0 }
     ];
-
-    envLights.forEach(({ type, color, intensity, position }) => {
-        let light;
-        if (type === 'AmbientLight') {
-            light = new THREE.AmbientLight(color, intensity);
-        } else if (type === 'PointLight') {
-            light = new THREE.PointLight(color, intensity);
-            if (position) {
-                light.position.set(...position);
-            }
-        }
-        envScene.add(light);
-    });
+    envLights.forEach(config => createLight(config, envScene));
 
     const envMap = pmremGenerator.fromScene(envScene).texture;
     pmremGenerator.dispose();
 
+    // Scene lights
     const lights = [
-        { type: 'PointLight', color: 0xff86db, intensity: 5.0, distance: 0, decay: 2, parent: 'camera' },
-        { type: 'PointLight', color: 0x7388fe, intensity: 4.0, distance: 0, decay: 2, position: [-100, -100, 100] },
-        { type: 'DirectionalLight', color: 0xffffff, intensity: 2.0, position: [200, 200, 200] }
+        { type: 'PointLight', color: colours.green, intensity: 5.0, distance: 0, decay: 2, parent: 'camera' },
+        { type: 'PointLight', color: colours.green, intensity: 4.0, distance: 0, decay: 2, position: [-100, -100, 100] },
+        { type: 'DirectionalLight', color: colours.green, intensity: 2.0, position: [200, 200, 200] }
     ];
 
-    lights.forEach(({ type, color, intensity, distance, decay, position, parent }) => {
-
-        let light;
-
-        if (type === 'PointLight') {
-
-            light = new THREE.PointLight(color, intensity, distance, decay);
-            if (position) {
-                light.position.set(...position);
-            }
-
-        } else if (type === 'DirectionalLight') {
-
-            light = new THREE.DirectionalLight(color, intensity);
-            if (position) {
-                light.position.set(...position);
-            }
-        }
-
-        const target = parent === 'camera' ? camera : scene;
-        target.add(light);
+    lights.forEach(({ parent, ...config }) => {
+        const light = createLight(config, parent === 'camera' ? camera : scene);
     });
 
-    // Load the geometry
-
+    // Load model
     const loader = new GLTFLoader();
     let model = null;
 
     loader.load('/dist/tss.gltf', (gltf) => {
         gltf.scene.traverse((child) => {
-
             if (child.isMesh) {
-
                 child.material = new THREE.MeshPhysicalMaterial({
-                    color: 0xffffff,
-                    roughness: 0.015,
-                    metalness: 1.0,
-                    envMap: envMap,
-                    envMapIntensity: 2.5,
-                    clearcoat: 1.0,
-                    clearcoatRoughness: 0.0,
-                    transmission: 0.1,
-                    thickness: 1,
-                    side: THREE.DoubleSide
+                    ...MODEL_MATERIAL_CONFIG,
+                    envMap: envMap
                 });
-
             }
-
         });
 
         model = gltf.scene;
         scene.add(model);
-
     });
 
-    // Camera
-
-    camera.position.set(0, 10, 80);
-    camera.lookAt(0, 0, -5);
-
-    // Renderer
-
-    renderer.setClearColor('#000000');
-    renderer.setPixelRatio(pixelRatio);
-    renderer.setSize(windowWidth, windowHeight);
-
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-    renderer.gammaInput = true;
-    renderer.gammaOutput = true;
-
+    // Setup camera and renderer
+    setupCamera(camera, [-10, 10, 50], [0, 1, 0]);
+    setupRenderer(renderer, windowWidth, windowHeight, pixelRatio);
     document.querySelector('.js-three-wrapper').appendChild(renderer.domElement);
 
+    // Resize handler
     window.addEventListener('resize', () => {
-        windowWidth = window.innerWidth;
-        windowHeight = window.innerHeight;
-
+        ({ width: windowWidth, height: windowHeight } = getWindowDimensions());
         renderer.setSize(windowWidth, windowHeight);
         camera.aspect = windowWidth / windowHeight;
         camera.updateProjectionMatrix();
     });
 
+    let keyframe = 0;
+
+    // Render loop
     const render = () => {
         requestAnimationFrame(render);
-
+        keyframe += 0.001;
         if (model) {
-            model.rotation.y += 0.002;
-            model.rotation.z += 0.001;
+            model.rotation.y += MODEL_ROTATION_SPEED.y;
+            model.rotation.z += Math.cos(model.rotation.y) * 0.001;
+            model.rotation.x += Math.sin(model.rotation.y) * 0.001;
         }
+
+        boxes.forEach((box) => {
+            // console.log(box);
+        });
 
         renderer.render(scene, camera);
     };
