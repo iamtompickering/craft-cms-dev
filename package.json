@@ -32,6 +32,7 @@
   },
   "homepage": "https://github.com/madebyshape/craft-cms#readme",
   "dependencies": {
+    "lil-gui": "^0.21.0",
     "three": "^0.182.0"
   }
 }
