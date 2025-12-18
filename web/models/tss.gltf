@@ -1,0 +1,244 @@
+{
+  "asset": {
+    "generator": "glTF-Transform v4.2.1",
+    "version": "2.0"
+  },
+  "accessors": [
+    {
+      "type": "VEC3",
+      "componentType": 5126,
+      "count": 2904,
+      "max": [
+        1.2750529050827026,
+        0.23843204975128174,
+        0.35164833068847656
+      ],
+      "min": [
+        -1.2750529050827026,
+        -0.23843204975128174,
+        -0.35164833068847656
+      ],
+      "bufferView": 0,
+      "byteOffset": 0
+    },
+    {
+      "type": "VEC3",
+      "componentType": 5126,
+      "count": 2904,
+      "bufferView": 0,
+      "byteOffset": 12
+    },
+    {
+      "type": "VEC2",
+      "componentType": 5126,
+      "count": 2904,
+      "bufferView": 0,
+      "byteOffset": 24
+    },
+    {
+      "type": "SCALAR",
+      "componentType": 5123,
+      "count": 4356,
+      "bufferView": 1,
+      "byteOffset": 0
+    },
+    {
+      "type": "SCALAR",
+      "componentType": 5123,
+      "count": 30930,
+      "bufferView": 1,
+      "byteOffset": 8712
+    },
+    {
+      "type": "VEC3",
+      "componentType": 5126,
+      "count": 6293,
+      "max": [
+        0.044427696615457535,
+        0.15395280718803406,
+        0.30051881074905396
+      ],
+      "min": [
+        -0.5404002666473389,
+        1.1275556057149371e-14,
+        -0.41126641631126404
+      ],
+      "bufferView": 2,
+      "byteOffset": 0
+    },
+    {
+      "type": "VEC3",
+      "componentType": 5126,
+      "count": 6293,
+      "bufferView": 2,
+      "byteOffset": 12
+    },
+    {
+      "type": "VEC2",
+      "componentType": 5126,
+      "count": 6293,
+      "bufferView": 2,
+      "byteOffset": 24
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 92928,
+      "byteStride": 32,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 92928,
+      "byteLength": 70572,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 163500,
+      "byteLength": 201376,
+      "byteStride": 32,
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "buffer.bin",
+      "byteLength": 364876
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {}
+    },
+    {
+      "name": "Oil Slick Metal",
+      "doubleSided": true,
+      "pbrMetallicRoughness": {
+        "roughnessFactor": 0.2340909093618393
+      },
+      "extensions": {
+        "KHR_materials_anisotropy": {
+          "anisotropyStrength": 0.03636366128921509,
+          "anisotropyRotation": 1.5136764212129836
+        },
+        "KHR_materials_ior": {
+          "ior": 1.4359999895095825
+        },
+        "KHR_materials_sheen": {
+          "sheenColorFactor": [
+            1,
+            1,
+            1
+          ],
+          "sheenRoughnessFactor": 0.5
+        },
+        "KHR_materials_specular": {
+          "specularFactor": 0.7454544901847839
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "mode": 4,
+          "material": 0,
+          "indices": 3
+        }
+      ]
+    },
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 5,
+            "NORMAL": 6,
+            "TEXCOORD_0": 7
+          },
+          "mode": 4,
+          "material": 1,
+          "indices": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Scene",
+      "children": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "Cube",
+      "extras": {
+        "name": "Cube"
+      },
+      "translation": [
+        0.3420654535293579,
+        -0.6899175643920898,
+        -0.7303245067596436
+      ],
+      "rotation": [
+        -0.04254941629420384,
+        0.0004613233017754508,
+        -0.010831601884884877,
+        0.9990355402859492
+      ],
+      "scale": [
+        1.3440704345683951,
+        1.425366640057592,
+        1.5454884767192705
+      ],
+      "mesh": 0
+    },
+    {
+      "name": "Retopo_S_JELLY004",
+      "extras": {
+        "name": "Retopo_S_JELLY.004"
+      },
+      "translation": [
+        -2.596790313720703,
+        1.050927996635437,
+        -1.480217695236206
+      ],
+      "rotation": [
+        0.6816779982151321,
+        -0.012426025468503216,
+        -0.002488127513337897,
+        0.7315425550674893
+      ],
+      "scale": [
+        7.186764240370226,
+        7.186762637702774,
+        7.186765021985882
+      ],
+      "mesh": 1
+    }
+  ],
+  "scenes": [
+    {
+      "name": "AuxScene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "scene": 0,
+  "extensionsUsed": [
+    "KHR_materials_anisotropy",
+    "KHR_materials_ior",
+    "KHR_materials_sheen",
+    "KHR_materials_specular"
+  ]
+}

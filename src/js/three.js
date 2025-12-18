@@ -143,7 +143,7 @@ const threeModule = () => {
     const loader = new GLTFLoader();
     let model = null;
 
-    loader.load('/dist/tss.gltf', (gltf) => {
+    loader.load('/models/tss.gltf', (gltf) => {
         gltf.scene.traverse((child) => {
             if (child.isMesh) {
                 child.material = new THREE.MeshPhysicalMaterial({
