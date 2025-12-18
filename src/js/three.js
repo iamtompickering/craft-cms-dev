@@ -214,10 +214,11 @@ const threeModule = () => {
     // Render loop
     const render = () => {
         requestAnimationFrame(render);
+        keyframe += 0.01;
         if (model) {
-            // model.rotation.y += 0.002;
-            // model.rotation.z += Math.cos(model.rotation.y) * 0.001;
-            // model.rotation.x += Math.sin(model.rotation.y) * 0.001;
+            model.rotation.y += Math.sin(keyframe) * 0.0002;
+            model.rotation.z += Math.cos(keyframe) * 0.0002;
+            model.rotation.x += Math.sin(keyframe) * 0.0002;
         }
 
 
