@@ -103,9 +103,9 @@ const threeModule = () => {
 
     // Boxes
     const boxesConfig = [
-        { color: colours.green, position: [100, 20, 100], size: 50 },
+        { color: colours.green, position: [70, 20, 100], size: 50 },
         { color: colours.blue, position: [-50, 50, -100], size: 20 },
-        { color: colours.pink, position: [-50, 50, -50], size: 20 },
+        { color: colours.pink, position: [20, 50, -50], size: 30 },
         { color: colours.green, position: [0, -50, -100], size: 50 },
         { color: colours.pink, position: [0, 0, 200], size: 50 }
     ];
@@ -176,8 +176,8 @@ const threeModule = () => {
         });
 
         model = gltf.scene;
-        // model.position.x = 2;
-        // model.position.y = -0.5;
+        model.position.x = 2.5;
+        model.position.y = -1.5;
         // model.position.z = 15;
         // model.rotation.x = -0.0771975511965977;
         // model.rotation.y = 0.552802448803402;
@@ -189,7 +189,7 @@ const threeModule = () => {
     });
 
     // Setup camera and renderer
-    setupCamera(camera, [0, 0, 80], [0, 0, 0]);
+    setupCamera(camera, [-25, 10, 50], [0, 0, 0]);
 
 
     setupRenderer(renderer, windowWidth, windowHeight, pixelRatio);
