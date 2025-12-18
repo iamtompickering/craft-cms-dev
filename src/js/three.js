@@ -3,6 +3,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PMREMGenerator } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+import GUI from 'lil-gui';
 
 const threeModule = () => {
 
@@ -14,11 +17,13 @@ const threeModule = () => {
         white: 0xffffff,
     };
 
+    const gui = new GUI();
+
     // Constants
     const MODEL_MATERIAL_CONFIG = {
         color: colours.white,
-        roughness: 0.0,
-        metalness: 1.0,
+        roughness: 0.2,
+        metalness: 1.5,
     };
 
     // Helper functions
@@ -51,7 +56,7 @@ const threeModule = () => {
     };
 
     const setupRenderer = (renderer, width, height, pixelRatio) => {
-        renderer.setClearColor('#111111');
+        renderer.setClearColor('#0B0B0B');
         renderer.setPixelRatio(pixelRatio);
         renderer.setSize(width, height);
         renderer.shadowMap.enabled = true;
@@ -75,6 +80,8 @@ const threeModule = () => {
         alpha: true,
         powerPreference: "high-performance",
     });
+
+    const controls = new OrbitControls(camera, renderer.domElement);
 
     const pmremGenerator = new PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
@@ -151,7 +158,9 @@ const threeModule = () => {
     });
 
     // Setup camera and renderer
-    setupCamera(camera, [-10, 10, 50], [0, 1, 0]);
+    setupCamera(camera, [-25, 20, 50], [-2, 1.5, 0]);
+
+
     setupRenderer(renderer, windowWidth, windowHeight, pixelRatio);
     document.querySelector('.js-three-wrapper').appendChild(renderer.domElement);
 
@@ -175,10 +184,11 @@ const threeModule = () => {
     const render = () => {
         requestAnimationFrame(render);
         if (model) {
-            model.rotation.y += 0.004;
-            model.rotation.z += Math.cos(model.rotation.y) * 0.002;
-            model.rotation.x += Math.sin(model.rotation.y) * 0.002;
+            model.rotation.y += 0.002;
+            model.rotation.z += Math.cos(model.rotation.y) * 0.001;
+            model.rotation.x += Math.sin(model.rotation.y) * 0.001;
         }
+
 
         composer.render();
     };
