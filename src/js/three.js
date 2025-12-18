@@ -219,6 +219,7 @@ const threeModule = () => {
             model.rotation.y += Math.sin(keyframe) * 0.0002;
             model.rotation.z += Math.cos(keyframe) * 0.0002;
             model.rotation.x += Math.sin(keyframe) * 0.0002;
+            model.position.y += Math.sin(keyframe) * 0.0002;
         }
 
 
