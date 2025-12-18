@@ -173,14 +173,13 @@ const threeModule = () => {
     const render = () => {
         requestAnimationFrame(render);
         keyframe += 0.01;
-        if (model) {
-            const sin = Math.sin(keyframe) * wobbleAmount;
-            const cos = Math.cos(keyframe) * wobbleAmount;
-            model.rotation.y += sin;
-            model.rotation.z += cos;
-            model.rotation.x += sin;
-            model.position.y += sin;
-        }
+
+        const sin = Math.sin(keyframe) * wobbleAmount;
+        const cos = Math.cos(keyframe) * wobbleAmount;
+        model.rotation.y += sin;
+        model.rotation.z += cos;
+        model.rotation.x += sin;
+        model.position.y += sin;
 
         composer.render();
     };
