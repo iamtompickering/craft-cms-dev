@@ -3,11 +3,12 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PMREMGenerator } from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import GUI from 'lil-gui';
 
 const threeModule = () => {
+
+    const gui = new GUI();
 
     const colours = {
         green: 0x65e2ca,
@@ -17,7 +18,7 @@ const threeModule = () => {
         white: 0xffffff,
     };
 
-    const gui = new GUI();
+    // const gui = new GUI();
 
     // Constants
     const MODEL_MATERIAL_CONFIG = {
@@ -56,7 +57,7 @@ const threeModule = () => {
     };
 
     const setupRenderer = (renderer, width, height, pixelRatio) => {
-        renderer.setClearColor('#0B0B0B');
+        renderer.setClearColor('#000000');
         renderer.setPixelRatio(pixelRatio);
         renderer.setSize(width, height);
         renderer.shadowMap.enabled = true;
@@ -80,8 +81,6 @@ const threeModule = () => {
         alpha: true,
         powerPreference: "high-performance",
     });
-
-    const controls = new OrbitControls(camera, renderer.domElement);
 
     const pmremGenerator = new PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
@@ -142,6 +141,23 @@ const threeModule = () => {
     // Load model
     const loader = new GLTFLoader();
     let model = null;
+    let modelGuiFolder = null;
+
+    const addModelToGui = (loadedModel) => {
+        if (modelGuiFolder) return;
+
+        modelGuiFolder = gui.addFolder('Model');
+
+        const positionFolder = modelGuiFolder.addFolder('Position');
+        positionFolder.add(loadedModel.position, 'x', -5, 5, 0.01).name('x').listen();
+        positionFolder.add(loadedModel.position, 'y', -3, 3, 0.01).name('y').listen();
+        positionFolder.add(loadedModel.position, 'z', -30, 30, 0.01).name('z').listen();
+
+        const rotationFolder = modelGuiFolder.addFolder('Rotation');
+        rotationFolder.add(loadedModel.rotation, 'x', -Math.PI / 3, Math.PI / 3, 0.01).name('x').listen();
+        rotationFolder.add(loadedModel.rotation, 'y', -Math.PI / 3, Math.PI / 3, 0.01).name('y').listen();
+        rotationFolder.add(loadedModel.rotation, 'z', -Math.PI / 3, Math.PI / 3, 0.01).name('z').listen();
+    };
 
     loader.load('/models/tss.gltf', (gltf) => {
         gltf.scene.traverse((child) => {
@@ -154,11 +170,17 @@ const threeModule = () => {
         });
 
         model = gltf.scene;
+        model.position.y = -2;
+        model.position.x = 2;
+        model.rotation.x = 0.3;
+
         scene.add(model);
+
+        addModelToGui(model);
     });
 
     // Setup camera and renderer
-    setupCamera(camera, [-25, 20, 50], [-2, 1.5, 0]);
+    setupCamera(camera, [0, 0, 80], [0, 0, 0]);
 
 
     setupRenderer(renderer, windowWidth, windowHeight, pixelRatio);
@@ -184,9 +206,9 @@ const threeModule = () => {
     const render = () => {
         requestAnimationFrame(render);
         if (model) {
-            model.rotation.y += 0.002;
-            model.rotation.z += Math.cos(model.rotation.y) * 0.001;
-            model.rotation.x += Math.sin(model.rotation.y) * 0.001;
+            // model.rotation.y += 0.002;
+            // model.rotation.z += Math.cos(model.rotation.y) * 0.001;
+            // model.rotation.x += Math.sin(model.rotation.y) * 0.001;
         }
 
 
