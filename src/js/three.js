@@ -170,9 +170,12 @@ const threeModule = () => {
         });
 
         model = gltf.scene;
-        model.position.y = -2;
         model.position.x = 2;
-        model.rotation.x = 0.3;
+        model.position.y = -0.5;
+        model.position.z = 15;
+        model.rotation.x = -0.0771975511965977;
+        model.rotation.y = 0.552802448803402;
+        model.rotation.z = 0.392802448803402;
 
         scene.add(model);
 
