@@ -103,7 +103,7 @@ const threeModule = () => {
 
     // Boxes
     const boxesConfig = [
-        { color: colours.green, position: [70, 20, 100], size: 50 },
+        { color: colours.green, position: [75, 20, 100], size: 50 },
         { color: colours.blue, position: [-50, 50, -100], size: 20 },
         { color: colours.pink, position: [20, 50, -50], size: 30 },
         { color: colours.green, position: [0, -50, -100], size: 50 },
