@@ -126,14 +126,12 @@ const threeModule = () => {
 
     loader.load('/models/tss.gltf', (gltf) => {
         gltf.scene.traverse((child) => {
-            if (child.isMesh) {
-                child.material = new THREE.MeshPhysicalMaterial({
-                    color: colours.white,
-                    roughness: 0.2,
-                    metalness: 1.5,
-                    envMap: envMap
-                });
-            }
+            child.material = new THREE.MeshPhysicalMaterial({
+                color: colours.white,
+                roughness: 0.2,
+                metalness: 1.5,
+                envMap: envMap
+            });
         });
 
         model = gltf.scene;
