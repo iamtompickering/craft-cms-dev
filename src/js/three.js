@@ -184,22 +184,33 @@ const threeModule = () => {
     });
 
     let scrollY = 0;
-    const modelBasePosition = { x: 2.5, y: -1.5, z: 0 };
+    const modelBasePosition = { x: 0, y: -1.5, z: 0 };
     const floatAmplitude = 0.15;
     const floatSpeed = 0.8;
+
+    // Rotation: idle + scroll (scroll up = rotate back, scroll down = rotate forward)
+    let idleRotationY = 0;
+    const idleRotationSpeed = 0.12; // rad/s – slow idle spin
+    const scrollRotationMultiplier = Math.PI * 6; // faster response to scroll
+    let lastTime = performance.now() * 0.001;
 
     // Render loop
     const render = () => {
         requestAnimationFrame(render);
 
+        const now = performance.now() * 0.001;
+        const dt = now - lastTime;
+        lastTime = now;
+
         if (model) {
 
-            const t = performance.now() * 0.001;
-            const rotation = scrollY * Math.PI * 3;
+            const t = now;
+            idleRotationY += idleRotationSpeed * dt;
+            const scrollRotationY = scrollY * scrollRotationMultiplier;
+            model.rotation.y = idleRotationY + scrollRotationY;
 
-            model.rotation.y = rotation;
-            model.rotation.z = rotation;
-            model.rotation.x = Math.sin(t * floatSpeed) * 0.05;
+            // model.rotation.z = rotation;
+            // model.rotation.x = Math.sin(t * floatSpeed) * 0.05;
 
             model.position.x = modelBasePosition.x + Math.sin(t * floatSpeed) * floatAmplitude;
             model.position.y = modelBasePosition.y + Math.cos(t * floatSpeed * 1.1) * floatAmplitude;
