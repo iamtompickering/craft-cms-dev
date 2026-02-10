@@ -2,7 +2,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import Lenis from 'lenis';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const threeModule = () => {
 
@@ -74,7 +76,7 @@ const threeModule = () => {
     });
 
     // Setup controls
-    new OrbitControls(camera, renderer.domElement);
+    // new OrbitControls(camera, renderer.domElement);
 
     // Setup PMREM generator
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -140,7 +142,7 @@ const threeModule = () => {
     });
 
     // Setup camera and renderer
-    setupCamera(camera, [-25, 10, 50], [0, 0, 0]);
+    setupCamera(camera, [-25, 10, 60], [0, 0, 0]);
 
     // Setup renderer
     setupRenderer(renderer, windowWidth, windowHeight, pixelRatio);
@@ -165,20 +167,45 @@ const threeModule = () => {
 
     });
 
-    let keyframe = 0;
-    const wobbleAmount = 0.0002;
+    // Initialize Lenis
+    const lenis = new Lenis({
+        autoRaf: true,
+        duration: 1.5,
+        anchors: true,
+        prevent: (node) => node.classList?.contains('js-modal')
+    });
+
+    lenis.on('scroll', (event) => {
+        ScrollTrigger.update();
+    });
+
+    window.addEventListener('scroll', () => {
+        scrollY = window.scrollY / document.body.clientHeight;
+    });
+
+    let scrollY = 0;
+    const modelBasePosition = { x: 2.5, y: -1.5, z: 0 };
+    const floatAmplitude = 0.15;
+    const floatSpeed = 0.8;
 
     // Render loop
     const render = () => {
         requestAnimationFrame(render);
-        keyframe += 0.01;
 
-        const sin = Math.sin(keyframe) * wobbleAmount;
-        const cos = Math.cos(keyframe) * wobbleAmount;
-        model.rotation.y += sin;
-        model.rotation.z += cos;
-        model.rotation.x += sin;
-        model.position.y += sin;
+        if (model) {
+
+            const t = performance.now() * 0.001;
+            const rotation = scrollY * Math.PI * 3;
+
+            model.rotation.y = rotation;
+            model.rotation.z = rotation;
+            model.rotation.x = Math.sin(t * floatSpeed) * 0.05;
+
+            model.position.x = modelBasePosition.x + Math.sin(t * floatSpeed) * floatAmplitude;
+            model.position.y = modelBasePosition.y + Math.cos(t * floatSpeed * 1.1) * floatAmplitude;
+            model.position.z = modelBasePosition.z + Math.sin(t * floatSpeed * 0.9) * floatAmplitude;
+
+        }
 
         composer.render();
     };
