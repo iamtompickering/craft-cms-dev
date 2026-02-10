@@ -188,10 +188,9 @@ const threeModule = () => {
     const floatAmplitude = 0.15;
     const floatSpeed = 0.8;
 
-    // Rotation: idle + scroll (scroll up = rotate back, scroll down = rotate forward)
     let idleRotationY = 0;
-    const idleRotationSpeed = 0.12; // rad/s – slow idle spin
-    const scrollRotationMultiplier = Math.PI * 6; // faster response to scroll
+    const idleRotationSpeed = 0.1;
+    const scrollRotationMultiplier = Math.PI * 6;
     let lastTime = performance.now() * 0.001;
 
     // Render loop
